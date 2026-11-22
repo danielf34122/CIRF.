@@ -1,0 +1,376 @@
+/* Base que antes ponía el visor de Claude */
+:root{color-scheme:light}
+body{margin:0}
+[hidden]{display:none !important}
+img{max-width:100%}
+
+/* Layout: una sola columna. Arriba el repertorio de hoy en bloque azul marino, debajo los próximos por fecha y al final los anteriores plegados. Cada repertorio lleva su hilo de comentarios. */
+:root{
+  --bg:#EAF1FB; --surface:#FFFFFF; --ink:#0B1F3A; --muted:#4D6385; --line:#CCDAEE;
+  --accent:#1F5FE0; --accent-ink:#FFFFFF; --link:#1457C8; --field:#F4F8FE; --danger:#B3261E;
+  --hero-bg:#0B2A5B; --hero-fg:#EAF2FF; --hero-muted:#9DB6DE; --hero-link:#8CC4FF; --hero-line:#27457F;
+  --etq-bg:#5AB0FF; --etq-fg:#06214A;
+  --c-pastor:#F2C230; --c-alabanza:#2FB36D; --c-danza:#F0629F; --c-sonidista:#8B6CF0;
+  --f-display:'Bricolage Grotesque',system-ui,sans-serif;
+  --f-body:'Figtree',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A1426; --surface:#101E38; --ink:#E6EEFC; --muted:#9BB0D3; --line:#22385E;
+    --accent:#5B9BFF; --accent-ink:#04122B; --link:#7DB4FF; --field:#0C1830; --danger:#FF8A80;
+    --hero-bg:#16356B; --hero-fg:#EAF2FF; --hero-muted:#A9C0E6; --hero-link:#9BD0FF; --hero-line:#2E5090;
+    --etq-bg:#7CC0FF; --etq-fg:#06214A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A1426; --surface:#101E38; --ink:#E6EEFC; --muted:#9BB0D3; --line:#22385E;
+  --accent:#5B9BFF; --accent-ink:#04122B; --link:#7DB4FF; --field:#0C1830; --danger:#FF8A80;
+  --hero-bg:#16356B; --hero-fg:#EAF2FF; --hero-muted:#A9C0E6; --hero-link:#9BD0FF; --hero-line:#2E5090;
+  --etq-bg:#7CC0FF; --etq-fg:#06214A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--ink); font:16px/1.5 var(--f-body);
+  padding-block:28px 56px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap{max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:28px; min-width:0}
+h1,h2,h3{font-family:var(--f-display); margin:0; text-wrap:balance; line-height:1.1}
+button,input,textarea{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+.muted{color:var(--muted)}
+
+.top{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:16px}
+.top h1{font-size:clamp(2rem,7vw,3rem); font-weight:700; letter-spacing:-.02em}
+.top p{margin:6px 0 0; color:var(--muted)}
+.btn{
+  border:1.5px solid var(--ink); background:transparent; border-radius:8px; padding:9px 16px;
+  font-weight:600; cursor:pointer; min-height:42px;
+}
+.btn:hover{background:var(--ink); color:var(--bg)}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(.92); color:var(--accent-ink); background:var(--accent)}
+.btn.small{padding:4px 10px; min-height:32px; font-size:.875rem; border-width:1px}
+.btn.ghost{border-color:var(--line); color:var(--muted)}
+.btn.ghost:hover{background:var(--field); color:var(--ink)}
+.btn:disabled{opacity:.5; cursor:not-allowed}
+
+/* Formulario */
+.editor{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px; display:flex; flex-direction:column; gap:16px}
+.editor h2{font-size:1.4rem}
+.campos{display:grid; grid-template-columns:200px 1fr; gap:14px}
+@media (max-width:560px){.campos{grid-template-columns:1fr}}
+label.lbl{display:flex; flex-direction:column; gap:5px; font-size:.8125rem; font-weight:600; color:var(--muted); letter-spacing:.04em; text-transform:uppercase; min-width:0}
+input[type=text],input[type=date],input[type=url],textarea{
+  width:100%; min-width:0; background:var(--field); border:1px solid var(--line); border-radius:8px; padding:9px 11px;
+  text-transform:none; letter-spacing:0; font-weight:400; color:var(--ink);
+}
+textarea{resize:vertical; min-height:64px}
+.filas{display:flex; flex-direction:column; gap:10px; margin:0; padding:0; list-style:none}
+.fila{display:grid; grid-template-columns:2rem 1fr auto; gap:8px 10px; align-items:start; padding:10px; border:1px solid var(--line); border-radius:10px; background:var(--field)}
+.fila .n{font-family:var(--f-mono); color:var(--muted); padding-top:9px; text-align:right}
+.fila .cols{display:grid; grid-template-columns:1fr 1.3fr; gap:8px; min-width:0}
+@media (max-width:640px){.fila .cols{grid-template-columns:1fr}}
+.fila .acc{display:flex; gap:4px}
+.fila input{background:var(--surface)}
+.iconbtn{width:34px; height:34px; border-radius:8px; border:1px solid var(--line); background:var(--surface); cursor:pointer; line-height:1}
+.iconbtn:hover{border-color:var(--ink)}
+.iconbtn:disabled{opacity:.35; cursor:default}
+.acciones{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+.estado{font-size:.9rem; color:var(--muted); min-height:1.4em}
+.estado.err{color:var(--danger)}
+
+/* Secciones */
+.sec{display:flex; flex-direction:column; gap:14px}
+.sec > h2{font-size:1.15rem; font-weight:500; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; font-family:var(--f-mono)}
+
+/* Hoy */
+.hoy{background:var(--hero-bg); color:var(--hero-fg); border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:18px; min-width:0}
+.hoy .etq{align-self:flex-start; background:var(--etq-bg); color:var(--etq-fg); font-family:var(--f-mono); font-size:.8125rem; padding:3px 10px; border-radius:999px; letter-spacing:.08em}
+.hoy h3{font-size:clamp(1.6rem,5.5vw,2.25rem); font-weight:700; letter-spacing:-.02em}
+.hoy .fecha{color:var(--hero-muted)}
+.hoy a{color:var(--hero-link)}
+.hoy .muted{color:var(--hero-muted)}
+.hoy .temas li{border-top:1px solid var(--hero-line)}
+.hoy .btn{border-color:var(--hero-fg); color:var(--hero-fg)}
+.hoy .btn:hover{background:var(--hero-fg); color:var(--hero-bg)}
+.hoy .btn.ghost{border-color:var(--hero-line); color:var(--hero-muted)}
+.hoy .btn.ghost:hover{background:transparent; color:var(--hero-fg); border-color:var(--hero-fg)}
+.hoy .btn.primary{background:var(--etq-bg); border-color:var(--etq-bg); color:var(--etq-fg)}
+.hoy .btn.primary:hover{background:var(--etq-bg); color:var(--etq-fg)}
+.hoy .chip{border-color:var(--hero-line); color:var(--hero-muted)}
+.hoy :focus-visible{outline-color:var(--etq-bg)}
+
+/* Tarjetas de repertorio */
+.rep{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:18px 20px; display:flex; flex-direction:column; gap:12px; min-width:0}
+.cab{display:flex; gap:16px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap}
+.rep h3{font-size:1.35rem; font-weight:700; letter-spacing:-.01em}
+.fecha{color:var(--muted); font-size:.95rem; text-transform:capitalize}
+.cab-txt{min-width:0; display:flex; flex-direction:column; gap:3px}
+.nota{margin:0; color:var(--muted); font-size:.95rem; overflow-wrap:anywhere}
+.hoy .nota{color:var(--hero-muted)}
+.temas{list-style:none; margin:0; padding:0; display:flex; flex-direction:column}
+.temas li{display:grid; grid-template-columns:2rem 1fr auto; gap:4px 10px; align-items:baseline; padding:10px 0; border-top:1px solid var(--line); min-width:0}
+.temas .n{font-family:var(--f-mono); font-size:.875rem; color:var(--muted); text-align:right}
+.hoy .temas .n{color:var(--hero-muted)}
+.temas .t{font-weight:600; overflow-wrap:anywhere; min-width:0}
+.temas a{font-weight:500; font-size:.9rem; color:var(--link); text-decoration-thickness:1px; text-underline-offset:3px; white-space:nowrap}
+.hoy .temas a{color:var(--hero-link)}
+.chip{display:inline-block; border:1px solid var(--line); color:var(--muted); border-radius:999px; padding:1px 9px; font-size:.8125rem; font-family:var(--f-mono)}
+.pie{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.vacio{border:1.5px dashed var(--line); border-radius:12px; padding:28px 20px; color:var(--muted); text-align:center; display:flex; flex-direction:column; gap:10px; align-items:center}
+.vacio strong{color:var(--ink); font-family:var(--f-display); font-size:1.2rem; font-weight:500}
+.aviso{font-size:.9rem; color:var(--muted); background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:8px 12px}
+details.pasados > summary{cursor:pointer; font-family:var(--f-mono); font-size:1.15rem; font-weight:500; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; list-style:revert}
+details.pasados[open] > summary{margin-bottom:14px}
+.lista{display:flex; flex-direction:column; gap:14px}
+
+/* Comentarios */
+.coment{border-top:1px solid var(--line); padding-top:12px}
+.hoy .coment{border-top-color:var(--hero-line)}
+.coment > summary{cursor:pointer; font-weight:600; font-size:.95rem; color:var(--muted); width:fit-content}
+.hoy .coment > summary{color:var(--hero-muted)}
+.coment > summary:hover{color:var(--ink)}
+.hoy .coment > summary:hover{color:var(--hero-fg)}
+.com-cuerpo{display:flex; flex-direction:column; gap:14px; margin-top:12px}
+.com-lista{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px}
+.com-item{display:flex; flex-direction:column; gap:3px; min-width:0}
+.com-meta{display:flex; flex-wrap:wrap; gap:4px 10px; align-items:baseline}
+.com-meta b{font-weight:600}
+.com-meta time{font-family:var(--f-mono); font-size:.75rem; color:var(--muted)}
+.hoy .com-meta time{color:var(--hero-muted)}
+.com-txt{margin:0; white-space:pre-wrap; overflow-wrap:anywhere}
+.com-form{display:flex; flex-direction:column; gap:8px; align-items:flex-start}
+.com-form textarea{min-height:56px; background:var(--field); color:var(--ink)}
+.hoy .com-form textarea{background:transparent; border-color:var(--hero-line); color:var(--hero-fg)}
+.hoy .com-form textarea::placeholder{color:var(--hero-muted)}
+.com-vacio{margin:0; color:var(--muted); font-size:.9rem}
+.hoy .com-vacio{color:var(--hero-muted)}
+/* Perfil: nombre y cargo */
+.yo{margin:8px 0 0; display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.modal{position:fixed; inset:0; z-index:50; background:rgba(5,15,35,.62); display:flex; align-items:center; justify-content:center; overflow:auto;
+  padding:max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
+.modal-card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:24px; width:100%; max-width:440px; display:flex; flex-direction:column; gap:16px}
+.modal-card h2{font-size:1.6rem}
+.modal-card p{margin:0}
+.cargos{border:0; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; min-width:0}
+.cargos legend{font-size:.8125rem; font-weight:600; color:var(--muted); letter-spacing:.04em; text-transform:uppercase; padding:0; margin-bottom:8px}
+.op{display:flex; gap:10px; align-items:center; border:1px solid var(--line); border-radius:10px; padding:10px 12px; cursor:pointer; background:var(--field)}
+.op input{accent-color:var(--accent); width:18px; height:18px; margin:0}
+.op:has(input:checked){border-color:var(--accent); box-shadow:0 0 0 1px var(--accent)}
+@media (prefers-reduced-motion: reduce){*{transition:none !important; animation:none !important}}
+
+
+/* ================= Animaciones ================= */
+@keyframes sube      { from{opacity:0; transform:translateY(18px)} to{opacity:1; transform:none} }
+@keyframes baja      { from{opacity:0; transform:translateY(-14px)} to{opacity:1; transform:none} }
+@keyframes aparece   { from{opacity:0} to{opacity:1} }
+@keyframes pop       { 0%{opacity:0; transform:scale(.88)} 60%{transform:scale(1.03)} 100%{opacity:1; transform:none} }
+@keyframes destello  { 0%{box-shadow:0 0 0 0 var(--accent)} 40%{box-shadow:0 0 0 6px color-mix(in srgb, var(--accent) 35%, transparent)} 100%{box-shadow:0 0 0 0 transparent} }
+@keyframes entraLado { from{opacity:0; transform:translateX(-16px)} to{opacity:1; transform:none} }
+@keyframes latido    { 0%,100%{transform:scale(1); opacity:1} 50%{transform:scale(1.7); opacity:.45} }
+@keyframes brillo    { from{transform:translateX(-120%) skewX(-18deg)} to{transform:translateX(220%) skewX(-18deg)} }
+@keyframes toastIn   { from{opacity:0; transform:translate(-50%, 24px) scale(.96)} to{opacity:1; transform:translate(-50%, 0) scale(1)} }
+@keyframes toastOut  { to{opacity:0; transform:translate(-50%, 14px) scale(.96)} }
+
+/* Al abrir la página */
+.top > div{animation:baja .6s cubic-bezier(.2,.8,.2,1) backwards}
+.top h1{animation:baja .7s cubic-bezier(.2,.8,.2,1) backwards}
+.top p{animation:aparece .9s .15s ease backwards}
+.yo{animation:pop .5s .3s ease backwards}
+#btn-nuevo{animation:pop .5s .35s cubic-bezier(.2,.8,.2,1) backwards}
+
+/* Las tarjetas entran una tras otra, solo cuando carga la página */
+body.entrada .sec > h2{animation:entraLado .5s ease backwards}
+body.entrada .sec > article, body.entrada .lista > article, body.entrada .sec > .vacio, body.entrada .vacio{animation:sube .6s cubic-bezier(.2,.8,.2,1) backwards}
+body.entrada .sec:nth-of-type(1) > article{animation-delay:.1s}
+body.entrada .sec:nth-of-type(2) > article, body.entrada .sec:nth-of-type(2) .lista > article:nth-child(1){animation-delay:.25s}
+body.entrada .lista > article:nth-child(2){animation-delay:.35s}
+body.entrada .lista > article:nth-child(3){animation-delay:.45s}
+body.entrada .lista > article:nth-child(n+4){animation-delay:.55s}
+body.entrada .temas li{animation:entraLado .45s ease backwards}
+body.entrada .temas li:nth-child(1){animation-delay:.3s}
+body.entrada .temas li:nth-child(2){animation-delay:.38s}
+body.entrada .temas li:nth-child(3){animation-delay:.46s}
+body.entrada .temas li:nth-child(4){animation-delay:.54s}
+body.entrada .temas li:nth-child(5){animation-delay:.62s}
+body.entrada .temas li:nth-child(n+6){animation-delay:.7s}
+
+/* Tarjetas: se levantan al pasar el mouse */
+.rep, .hoy{transition:transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease}
+@media (hover:hover){
+  .rep:hover{transform:translateY(-3px); box-shadow:0 10px 26px -12px rgba(11,42,91,.35); border-color:var(--accent)}
+  .hoy:hover{transform:translateY(-3px); box-shadow:0 14px 34px -14px rgba(11,42,91,.6)}
+}
+.temas li{transition:background-color .2s ease, padding-left .2s ease}
+@media (hover:hover){ .temas li:hover{padding-left:6px; background:color-mix(in srgb, var(--accent) 8%, transparent)} }
+.temas a{transition:letter-spacing .2s ease, color .2s ease}
+.temas a:hover{letter-spacing:.02em}
+
+/* Botones */
+.btn, .iconbtn{transition:transform .18s cubic-bezier(.2,.8,.2,1), background-color .2s ease, color .2s ease, border-color .2s ease, filter .2s ease, box-shadow .2s ease}
+@media (hover:hover){
+  .btn:not(:disabled):hover{transform:translateY(-2px); box-shadow:0 6px 16px -8px rgba(11,42,91,.5)}
+  .iconbtn:not(:disabled):hover{transform:scale(1.12)}
+}
+.btn:not(:disabled):active, .iconbtn:not(:disabled):active{transform:scale(.94); box-shadow:none}
+.btn.primary{position:relative; overflow:hidden}
+.btn.primary::after{content:""; position:absolute; top:0; bottom:0; left:0; width:40%; background:linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent); transform:translateX(-120%) skewX(-18deg); pointer-events:none}
+@media (hover:hover){ .btn.primary:not(:disabled):hover::after{animation:brillo .7s ease} }
+#btn-nuevo{animation:pop .5s .35s cubic-bezier(.2,.8,.2,1) backwards, destello 2.4s 1.2s ease 2}
+
+/* Etiqueta HOY con punto que late */
+.hoy .etq{display:inline-flex; align-items:center; gap:7px}
+.hoy .etq::before{content:""; width:8px; height:8px; border-radius:50%; background:currentColor; animation:latido 1.6s ease-in-out infinite}
+
+/* Formulario y ventana de perfil */
+.editor:not([hidden]){animation:baja .45s cubic-bezier(.2,.8,.2,1)}
+.fila{animation:pop .35s cubic-bezier(.2,.8,.2,1)}
+.modal:not([hidden]){animation:aparece .3s ease}
+.modal:not([hidden]) .modal-card{animation:pop .45s .05s cubic-bezier(.2,.8,.2,1) backwards}
+.cargos:not([hidden]){animation:baja .3s ease}
+.op{transition:border-color .2s ease, box-shadow .2s ease, transform .15s ease}
+@media (hover:hover){ .op:hover{transform:translateX(3px); border-color:var(--accent)} }
+input[type=text], input[type=date], input[type=url], textarea{transition:border-color .2s ease, box-shadow .2s ease}
+input[type=text]:focus, input[type=date]:focus, input[type=url]:focus, textarea:focus{outline:none; border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 28%, transparent)}
+
+/* Al agregar: el repertorio nuevo aparece con un pop y un destello */
+article.nuevo{animation:pop .6s cubic-bezier(.2,.8,.2,1), destello 1.6s .3s ease}
+.com-item.nuevo-com{animation:entraLado .45s cubic-bezier(.2,.8,.2,1), destello 1.4s .2s ease; border-radius:8px}
+
+/* Comentarios y secciones plegables */
+.coment[open] .com-cuerpo{animation:baja .35s ease}
+.coment > summary{transition:color .2s ease, transform .2s ease}
+.coment > summary:hover{transform:translateX(3px)}
+.chip{transition:transform .2s ease, background-color .2s ease}
+.chip:hover{transform:scale(1.06)}
+.yo .chip{animation:pop .5s .4s ease backwards}
+
+/* Aviso */
+.aviso:not([hidden]){animation:baja .4s ease}
+
+/* Mensaje flotante al guardar */
+.toast{position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); z-index:60;
+  background:var(--ink); color:var(--bg); padding:11px 20px; border-radius:999px; font-weight:600; box-shadow:0 12px 30px -10px rgba(0,0,0,.5);
+  max-width:calc(100vw - 32px); text-align:center; animation:toastIn .4s cubic-bezier(.2,.8,.2,1) both}
+.toast.sale{animation:toastOut .35s ease forwards}
+
+
+
+/* ================= Colores por cargo ================= */
+.rol-pastor{--c:var(--c-pastor)}
+.rol-alabanza{--c:var(--c-alabanza)}
+.rol-danza{--c:var(--c-danza)}
+.rol-sonidista{--c:var(--c-sonidista)}
+.chip.rol, .hoy .chip.rol{background:var(--c); color:#14110A; border-color:transparent; font-weight:500}
+.avatar{width:32px; height:32px; border-radius:50%; display:inline-grid; place-items:center; flex:none; font-family:var(--f-display); font-weight:700; font-size:1rem; color:#14110A; background:var(--c, var(--accent)); animation:pop .5s .3s cubic-bezier(.2,.8,.2,1) backwards}
+.yo{gap:8px}
+.yo .saludo{font-weight:600}
+.com-meta .avatar{width:26px; height:26px; font-size:.8rem; animation:none}
+/* opciones del formulario de perfil */
+.op:has(input[value="pastor"]){--c:var(--c-pastor)}
+.op:has(input[value="alabanza"]){--c:var(--c-alabanza)}
+.op:has(input[value="danza"]){--c:var(--c-danza)}
+.op:has(input[value="sonidista"]){--c:var(--c-sonidista)}
+.op[for^="r-"], .op[for^="o-"]{position:relative}
+.op[for^="r-"]::after, .op[for^="o-"]::after{content:""; width:12px; height:12px; border-radius:50%; background:var(--c); margin-left:auto; transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.op[for^="r-"]:hover::after, .op[for^="o-"]:hover::after{transform:scale(1.5)}
+.op[for^="r-"]:has(input:checked), .op[for^="o-"]:has(input:checked){border-color:var(--c); box-shadow:0 0 0 2px color-mix(in srgb, var(--c) 45%, transparent); background:color-mix(in srgb, var(--c) 14%, var(--field))}
+.op[for^="r-"]:has(input:checked)::after, .op[for^="o-"]:has(input:checked)::after{transform:scale(1.7)}
+
+/* ================= Más vida ================= */
+@keyframes deriva  { to{transform:translate3d(5%,4%,0) scale(1.1)} }
+@keyframes fluye   { to{background-position:200% center} }
+@keyframes flota   { 0%{transform:translateY(0) rotate(-10deg); opacity:0} 15%{opacity:.7} 100%{transform:translateY(-120px) rotate(14deg); opacity:0} }
+@keyframes respira { 0%,100%{box-shadow:0 0 0 0 rgba(90,176,255,0)} 50%{box-shadow:0 0 36px -2px rgba(90,176,255,.5)} }
+@keyframes onda    { from{transform:scale(0); opacity:.5} to{transform:scale(1); opacity:0} }
+@keyframes confeti { 0%{transform:translate(0,0) rotate(0); opacity:1} 40%{transform:translate(calc(var(--dx)*.7), var(--dy)) rotate(calc(var(--rot)*.5)); opacity:1} 100%{transform:translate(var(--dx), calc(var(--dy) + 260px)) rotate(var(--rot)); opacity:0} }
+
+/* Fondo con manchas de color que se mueven despacio */
+body::before{content:""; position:fixed; inset:-20%; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(38% 38% at 18% 18%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%),
+    radial-gradient(34% 34% at 82% 28%, color-mix(in srgb, var(--etq-bg) 20%, transparent), transparent 70%),
+    radial-gradient(40% 40% at 62% 88%, color-mix(in srgb, var(--link) 16%, transparent), transparent 70%);
+  animation:deriva 20s ease-in-out infinite alternate}
+
+/* Titulo con degradado que se mueve */
+.top h1{background:linear-gradient(90deg, var(--ink) 0%, var(--accent) 45%, var(--etq-bg) 55%, var(--ink) 100%); background-size:200% auto;
+  -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent;
+  animation:baja .7s cubic-bezier(.2,.8,.2,1) backwards, fluye 9s linear infinite}
+
+/* Notas musicales que suben junto al titulo */
+.top{position:relative}
+.notas{position:absolute; right:0; top:0; bottom:0; width:min(46%, 260px); overflow:hidden; pointer-events:none}
+.notas i{position:absolute; bottom:-6px; font-style:normal; font-size:1.5rem; color:var(--accent); opacity:0; animation:flota 6s ease-in infinite}
+.notas i:nth-child(1){left:6%;  animation-delay:0s}
+.notas i:nth-child(2){left:24%; animation-delay:1.4s; font-size:1.9rem}
+.notas i:nth-child(3){left:42%; animation-delay:2.8s}
+.notas i:nth-child(4){left:60%; animation-delay:.8s; font-size:1.2rem}
+.notas i:nth-child(5){left:78%; animation-delay:2.2s; font-size:1.7rem}
+.notas i:nth-child(6){left:92%; animation-delay:3.6s}
+.top > .btn{position:relative; z-index:1}
+
+/* Tarjeta de hoy: respira */
+.hoy{position:relative}
+.hoy::before{content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none; animation:respira 4.5s ease-in-out infinite}
+
+/* Luz que sigue al mouse dentro de las tarjetas */
+.rep{background-image:radial-gradient(260px circle at var(--mx,-500px) var(--my,-500px), color-mix(in srgb, var(--accent) 13%, transparent), transparent 70%)}
+.hoy{background-image:radial-gradient(300px circle at var(--mx,-500px) var(--my,-500px), rgba(255,255,255,.12), transparent 70%)}
+
+/* Canciones y enlaces */
+.temas .n{display:inline-block; transition:transform .25s cubic-bezier(.2,.8,.2,1), color .2s ease}
+@media (hover:hover){ .temas li:hover .n{transform:scale(1.3) rotate(-6deg); color:var(--accent)} .hoy .temas li:hover .n{color:var(--etq-bg)} }
+.temas a::after{content:" →"; display:inline-block; transition:transform .2s ease}
+.temas a:hover::after{transform:translateX(5px)}
+
+/* Onda al hacer clic en un boton */
+.btn{position:relative; overflow:hidden}
+.onda{position:absolute; border-radius:50%; background:currentColor; pointer-events:none; animation:onda .6s ease-out forwards}
+
+/* Confeti al guardar */
+.confeti{position:fixed; left:50%; bottom:90px; width:0; height:0; z-index:61; pointer-events:none}
+.confeti span{position:absolute; left:0; top:0; width:9px; height:13px; border-radius:2px; animation:confeti 1.2s cubic-bezier(.2,.7,.3,1) forwards}
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{animation:none !important; transition:none !important}
+  .notas, .confeti{display:none}
+}
+
+/* Ajustes: fecha solo con la primera letra en mayúscula y enlaces en su propia línea en celular */
+.fecha, .rep .fecha, .hoy .fecha{text-transform:none}
+.fecha::first-letter{text-transform:uppercase}
+@media (max-width:520px){
+  .temas li{grid-template-columns:2rem 1fr}
+  .temas li > a{grid-column:2; justify-self:start}
+}
+
+/* ================= Logo ================= */
+@keyframes flotaLogo { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+.marca{display:flex; align-items:center; gap:18px; min-width:0}
+.marca-txt{min-width:0}
+.logo-wrap{flex:none; width:76px; height:76px; border-radius:50%; background:var(--hero-bg); display:inline-grid; place-items:center;
+  box-shadow:0 10px 24px -10px rgba(11,42,91,.7); animation:pop .6s .1s cubic-bezier(.2,.8,.2,1) backwards, flotaLogo 5s 1s ease-in-out infinite;
+  transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.logo{display:block; width:100%; height:100%; border-radius:50%; object-fit:cover}
+@media (hover:hover){ .logo-wrap:hover{transform:rotate(360deg) scale(1.08)} }
+.logo-wrap.pequeno{width:60px; height:60px; align-self:center}
+@media (max-width:520px){
+  .logo-wrap{width:60px; height:60px}
+  .marca{gap:12px}
+}
+@media (max-width:520px){ .marca{align-items:flex-start} .logo-wrap{margin-top:4px} }
+
+/* Logo: se agranda al pasar el mouse (el flotar usa "translate" para no chocar con el zoom) */
+@keyframes flotaLogo { 0%,100%{translate:0 0} 50%{translate:0 -5px} }
+.logo-wrap{position:relative; z-index:2; cursor:pointer; transition:transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease}
+@media (hover:hover){
+  .logo-wrap:hover{transform:scale(1.4); box-shadow:0 18px 36px -12px rgba(11,42,91,.75)}
+}
+.logo-wrap:active{transform:scale(1.25)}
+.marca{gap:22px}

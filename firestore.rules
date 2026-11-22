@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function entro() { return request.auth != null; }
+    function tienePerfil() {
+      return exists(/databases/$(database)/documents/perfiles/$(request.auth.uid));
+    }
+    function miPerfil() {
+      return get(/databases/$(database)/documents/perfiles/$(request.auth.uid)).data;
+    }
+    // Alabanza como cargo principal o como otro ministerio en el que sirve.
+    function esAlabanza() {
+      return tienePerfil() &&
+        (miPerfil().cargo == 'alabanza' || 'alabanza' in miPerfil().get('otros', []));
+    }
+
+    // Nombre y cargo: se crean una sola vez y nunca se modifican desde la página.
+    match /perfiles/{uid} {
+      allow read: if entro();
+      allow create: if entro()
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['nombre', 'cargo', 'otros', 'creado'])
+        && request.resource.data.cargo in ['alabanza', 'danza', 'pastor', 'sonidista']
+        && request.resource.data.otros is list
+        && request.resource.data.otros.size() <= 3
+        && request.resource.data.otros.hasOnly(['alabanza', 'danza', 'pastor', 'sonidista'])
+        && request.resource.data.nombre is string
+        && request.resource.data.nombre.size() > 0
+        && request.resource.data.nombre.size() <= 60;
+      allow update, delete: if false;
+    }
+
+    // Solo alabanza crea, edita y borra repertorios.
+    match /repertorios/{id} {
+      allow read: if entro();
+      allow create, update, delete: if entro() && esAlabanza();
+    }
+
+    // Cualquiera con perfil comenta. Borra el autor o alabanza.
+    match /comentarios/{id} {
+      allow read: if entro();
+      allow create: if entro() && tienePerfil()
+        && request.resource.data.autor == request.auth.uid
+        && request.resource.data.texto is string
+        && request.resource.data.texto.size() <= 500;
+      allow update: if false;
+      allow delete: if entro() && (resource.data.autor == request.auth.uid || esAlabanza());
+    }
+  }
+}

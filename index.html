@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Repertorios CIRF</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <span class="notas" aria-hidden="true"><i>♪</i><i>♫</i><i>♩</i><i>♬</i><i>♪</i><i>♫</i></span>
+    <div class="marca">
+      <span class="logo-wrap"><img class="logo" src="logo.png" alt="Logo CIRF" width="76" height="76"></span>
+      <div class="marca-txt">
+        <h1>Repertorios CIRF</h1>
+        <p id="hoy-txt">Canciones de cada fecha, con sus enlaces.</p>
+        <div class="yo" id="yo" hidden></div>
+      </div>
+    </div>
+    <button class="btn primary" id="btn-nuevo" type="button" hidden>Nuevo repertorio</button>
+  </header>
+
+  <div class="aviso" id="aviso" hidden></div>
+
+  <section class="editor" id="editor" hidden aria-labelledby="ed-titulo">
+    <h2 id="ed-titulo">Nuevo repertorio</h2>
+    <div class="campos">
+      <label class="lbl" for="f-fecha">Fecha
+        <input type="date" id="f-fecha">
+      </label>
+      <label class="lbl" for="f-titulo">Nombre del repertorio
+        <input type="text" id="f-titulo" maxlength="120" placeholder="Ej.: Culto del domingo, ensayo, boda de Ana y Luis">
+      </label>
+    </div>
+    <label class="lbl" for="f-notas">Notas (opcional)
+      <textarea id="f-notas" maxlength="600" placeholder="Hora de ensayo, quién dirige, recordatorios"></textarea>
+    </label>
+    <div>
+      <div class="lbl" style="margin-bottom:8px">Canciones en orden</div>
+      <ol class="filas" id="filas"></ol>
+      <div style="margin-top:10px"><button class="btn small" type="button" id="btn-fila">+ Agregar canción</button></div>
+    </div>
+    <div class="acciones">
+      <button class="btn primary" type="button" id="btn-guardar">Guardar repertorio</button>
+      <button class="btn ghost" type="button" id="btn-cancelar">Cancelar</button>
+      <span class="estado" id="estado" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <div id="contenido"><div class="vacio"><span>Cargando repertorios…</span></div></div>
+</main>
+
+<div class="modal" id="perfil" hidden role="dialog" aria-modal="true" aria-labelledby="p-tit">
+  <form class="modal-card" id="p-form">
+    <span class="logo-wrap pequeno"><img class="logo" src="logo.png" alt="Logo CIRF" width="60" height="60"></span>
+    <h2 id="p-tit">¿Quién eres?</h2>
+    <p class="muted">Tu nombre y tus ministerios aparecen en tu perfil y junto a tus comentarios. Quien sirve en Alabanza puede agregar repertorios, y Alabanza y Pastor ven los repertorios anteriores. Una vez guardados, no se pueden cambiar.</p>
+    <label class="lbl" for="p-nombre">Tu nombre
+      <input type="text" id="p-nombre" maxlength="60" autocomplete="name" placeholder="Nombre y apellido">
+    </label>
+    <fieldset class="cargos">
+      <legend>Tu cargo</legend>
+      <label class="op" for="r-alabanza"><input type="radio" name="cargo" id="r-alabanza" value="alabanza"> Alabanza</label>
+      <label class="op" for="r-danza"><input type="radio" name="cargo" id="r-danza" value="danza"> Danza</label>
+      <label class="op" for="r-pastor"><input type="radio" name="cargo" id="r-pastor" value="pastor"> Pastor</label>
+      <label class="op" for="r-sonidista"><input type="radio" name="cargo" id="r-sonidista" value="sonidista"> Sonidista</label>
+    </fieldset>
+    <label class="op" for="p-otro"><input type="checkbox" id="p-otro"> También sirvo en otro ministerio</label>
+    <fieldset class="cargos" id="p-otros-box" hidden>
+      <legend>¿En cuál otro?</legend>
+      <label class="op" for="o-alabanza"><input type="checkbox" name="otros" id="o-alabanza" value="alabanza"> Alabanza</label>
+      <label class="op" for="o-danza"><input type="checkbox" name="otros" id="o-danza" value="danza"> Danza</label>
+      <label class="op" for="o-pastor"><input type="checkbox" name="otros" id="o-pastor" value="pastor"> Pastor</label>
+      <label class="op" for="o-sonidista"><input type="checkbox" name="otros" id="o-sonidista" value="sonidista"> Sonidista</label>
+    </fieldset>
+    <span class="estado err" id="p-err" role="alert"></span>
+    <div class="acciones">
+      <button class="btn primary" type="submit" id="p-guardar">Guardar y entrar</button>
+      <button class="btn ghost" type="button" id="p-cancel" hidden>Cancelar</button>
+    </div>
+  </form>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
